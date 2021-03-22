@@ -10,7 +10,7 @@ We have used Charades competition starter code to run our models, the code can b
 We have trained four none pretraind models (see Models folder --> None-pretraind Models folder)
 
 ### Pretraind Models
-• MnasNet 1.0 
-• MobileNet v2 
-• ShuffleNet v2 
-• ResNeXt-50-32x4d 
+- MnasNet 1.0 
+- MobileNet v2 
+- ShuffleNet v2 
+- ResNeXt-50-32x4d 
