@@ -1,0 +1,56 @@
+import torch
+import torch.nn as nn
+from torch.autograd import Variable
+from torchsummary import summary
+
+class LambdaBase(nn.Sequential):
+    def __init__(self, fn, *args):
+        super(LambdaBase, self).__init__(*args)
+        self.lambda_func = fn
+
+    def forward_prepare(self, input):
+        output = []
+        for module in self._modules.values():
+            output.append(module(input))
+       # print(output)
+        return output if output else input
+
+class Lambda(LambdaBase):
+    def forward(self, input):
+        #print('input=', input.size())
+        return self.lambda_func(self.forward_prepare(input))
+
+
+model=nn.Sequential(
+            nn.Conv2d(20, 48, 7),
+            nn.BatchNorm2d(48),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(48, 96, 5),
+            nn.BatchNorm2d(96),
+            nn.ReLU(),
+            nn.MaxPool2d(2), 
+            nn.Conv2d(96, 256, 3),
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
+            nn.Conv2d(256, 512, 3),
+            nn.BatchNorm2d(512),
+            nn.ReLU(),
+            nn.Conv2d(512, 512, 3),
+            nn.BatchNorm2d(512),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            Lambda(lambda x: x.view(x.size(0),1,-1)),
+            
+            nn.LSTM(270848, 380,1,batch_first=True),
+            Lambda(lambda x: x[0]),
+            Lambda(lambda x: x.view(x.size(0),-1)),
+            nn.Sequential(Lambda(lambda x: x.view(1,-1) if 1==len(x.size()) else x ),nn.Linear(380,524)), 
+            nn.ReLU(),
+            nn.Dropout(0.6),
+            nn.Sequential(Lambda(lambda x: x.view(1,-1) if 1==len(x.size()) else x ),nn.Linear(524,522)), 
+            nn.ReLU(),
+            nn.Dropout(0.8),
+            nn.Softmax(dim=1),
+)
+model.in_features = 522

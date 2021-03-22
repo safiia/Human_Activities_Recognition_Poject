@@ -1,0 +1,60 @@
+
+import torch
+import torch.nn as nn
+from torch.autograd import Variable
+from torchsummary import summary
+
+class LambdaBase(nn.Sequential):
+    def __init__(self, fn, *args):
+        super(LambdaBase, self).__init__(*args)
+        self.lambda_func = fn
+
+    def forward_prepare(self, input):
+        output = []
+        for module in self._modules.values():
+            output.append(module(input))
+        #print(output)
+        return output if output else input
+
+class Lambda(LambdaBase):
+    def forward(self, input):
+        #print('input=', input.size())
+        return self.lambda_func(self.forward_prepare(input))
+
+
+model=nn.Sequential(
+            nn.Sequential(
+            nn.Conv2d(in_channels=20, out_channels= 50, kernel_size=(5,1), padding= 0, bias= True),# in_channels=20 in flownet , 3 in RGB
+            nn.ReLU(),
+            nn.MaxPool2d(4, stride=2,padding=0,ceil_mode=True),
+            nn.LocalResponseNorm(5,0.0001/5,0.75)),
+            
+        
+            nn.Sequential(
+            nn.Conv2d(in_channels=50, out_channels= 40, kernel_size=(5,1), padding= 0, bias= True),
+            nn.ReLU(),
+            nn.MaxPool2d(4, stride=2,padding=0,ceil_mode=True),
+            nn.LocalResponseNorm(5,0.0001/5,0.75)),
+            )
+
+
+            nn.Sequential(
+            nn.Conv2d(in_channels=40, out_channels= 20, kernel_size=(3,1), padding= 0, bias= True),
+            nn.ReLU(),
+            nn.LocalResponseNorm(5,0.0001/5,0.75)),
+           )
+
+
+       
+            Lambda(lambda x: x.view(x.size(0),-1)),
+            nn.Sequential(Lambda(lambda x: x.view(1,-1) if 1==len(x.size()) else x ),nn.Linear(55000,400),
+            nn.ReLU(),
+           
+            Lambda(lambda x: x.reshape(1,x.size(0),x.size(1))),#(1,32,400)
+            nn.LocalResponseNorm(5,0.0001/5,0.75),
+            Lambda(lambda x: x.reshape(x.size(1),x.size(2)))),
+ 
+            nn.Sequential(Lambda(lambda x: x.view(1,-1) if 1==len(x.size()) else x ),nn.Linear(400,157),
+            nn.Softmax(dim=1)),
+)
+model.in_features = 400
