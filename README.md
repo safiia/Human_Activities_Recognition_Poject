@@ -8,3 +8,6 @@ We have used Charades competition starter code to run our models, the code can b
 
 ## None-pretraind Models
 We have trained four none pretraind models (see Models folder --> None-pretraind Models folder)
+
+## Pretraind Models
+We have trained four none pretraind models (see Models folder --> pretraind Models folder)
