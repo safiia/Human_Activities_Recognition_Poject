@@ -6,8 +6,11 @@ For dataset,we use Optical flow and RGB Charades dataset to train our models.
 To learn more and download Charades Dataset click on this link: [Charades Datase Link](https://prior.allenai.org/projects/charades).
 We have used Charades competition starter code to run our models, the code can be found here: [Starter code ](https://github.com/gsig/charades-algorithms)
 
-## None-pretraind Models
+### None-pretraind Models
 We have trained four none pretraind models (see Models folder --> None-pretraind Models folder)
 
-## Pretraind Models
-We have trained four none pretraind models (see Models folder --> pretraind Models folder)
+### Pretraind Models
+• MnasNet 1.0 
+• MobileNet v2 
+• ShuffleNet v2 
+• ResNeXt-50-32x4d 
