@@ -11,7 +11,7 @@ We have trained four none pretraind models (see Models folder --> None-pretraind
 
 ### Pretraind Models
 
-All these models can be found in [Torchvision Models](https://pytorch.org/vision/0.8/models.html)
+All these models can be found on [Torchvision Models](https://pytorch.org/vision/0.8/models.html)
 - MnasNet 1.0 
 - MobileNet v2 
 - ShuffleNet v2 
